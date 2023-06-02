@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Simon Game</title>
+  <style>
+    .button {
+      width: 100px;
+      height: 100px;
+      margin: 10px;
+      border-radius: 50%;
+      cursor: pointer;
+      opacity: 0.6;
+    }
+    
+    .green {
+      background-color: green;
+    }
+    
+    .red {
+      background-color: red;
+    }
+    
+    .yellow {
+      background-color: yellow;
+    }
+    
+    .blue {
+      background-color: blue;
+    }
+  </style>
+</head>
+<body>
+  <h1>Simon Game</h1>
+  <div id="game-container">
+    <div id="green" class="button"></div>
+    <div id="red" class="button"></div>
+    <div id="yellow" class="button"></div>
+    <div id="blue" class="button"></div>
+  </div>
+  
+  <script>
+    const buttons = document.querySelectorAll('.button');
+    const gameContainer = document.getElementById('game-container');
+    const scoreDisplay = document.createElement('div');
+    scoreDisplay.textContent = 'Score: 0';
+    gameContainer.appendChild(scoreDisplay);
+    
+    const colors = ['green', 'red', 'yellow', 'blue'];
+    let sequence = [];
+    let playerSequence = [];
+    let score = 0;
+    let canClick = false;
+    
+    function playSequence() {
+      let i = 0;
+      let interval = setInterval(() => {
+        const button = document.getElementById(sequence[i]);
+        highlightButton(button);
+        i++;
+        if (i >= sequence.length) {
+          clearInterval(interval);
+          canClick = true;
+        }
+      }, 1000);
+    }
+    
+    function highlightButton(button) {
+      button.style.opacity = 1;
+      setTimeout(() => {
+        button.style.opacity = 0.6;
+      }, 500);
+    }
+    
+    function startGame() {
+      sequence = [];
+      playerSequence = [];
+      score = 0;
+      scoreDisplay.textContent = 'Score: 0';
+      addColor();
+      playSequence();
+    }
+    
+    function addColor() {
+      const randomColor = colors[Math.floor(Math.random() * colors.length)];
+      sequence.push(randomColor);
+      score++;
+      scoreDisplay.textContent = 'Score: ' + score;
+    }
+    
+    function handleClick(e) {
+      if (!canClick) return;
+      const button = e.target;
+      playerSequence.push(button.id);
+      highlightButton(button);
+      if (playerSequence.length === sequence.length) {
+        canClick = false;
+        if (playerSequence.toString() === sequence.toString()) {
+          playerSequence = [];
+          addColor();
+          setTimeout(playSequence, 1000);
+        } else {
+          alert('Game over! Your score: ' + score);
+          startGame();
+        }
+      }
+    }
+    
+    buttons.forEach(button => {
+      button.addEventListener('click', handleClick);
+    });
+    
+    startGame();
+  </script>
+</body>
+</html>
